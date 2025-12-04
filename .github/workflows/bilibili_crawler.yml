@@ -1,0 +1,45 @@
+name: B站up主粉丝量数据抓取
+
+on:
+  workflow_dispatch:  # 手动触发
+  schedule:
+    - cron: '0 4 * * *'  # 每天4点运行一次
+
+jobs:
+  crawl:
+    runs-on: ubuntu-latest
+    
+    steps:
+      # 1. 获取代码
+      - name: 检出代码
+        uses: actions/checkout@v3
+      
+      # 2. 设置Python
+      - name: 设置Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+      
+      # 3. 安装依赖
+      - name: 安装requests
+        run: pip install requests
+      
+      # 4. 运行抓取脚本
+      - name: 运行脚本
+        run: python main.py
+      
+      # 5. 上传日志文件
+      - name: 上传日志文件
+        uses: actions/upload-artifact@v3
+        with:
+          name: bilibili-log
+          path: bilibili_data_log.txt
+      
+      # 6. 提交更改回仓库（可选，这样文件会保存在仓库里）
+      - name: 提交日志文件
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add bilibili_data_log.txt
+          git commit -m "更新B站数据抓取日志 [skip ci]" -a || echo "没有变化可提交"
+          git push
