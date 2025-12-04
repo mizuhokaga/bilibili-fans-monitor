@@ -7,33 +7,41 @@ on:
 jobs:
   crawl-and-commit:
     runs-on: ubuntu-latest
+    # 设置写入仓库的权限
+    permissions:
+      contents: write
+
     steps:
-    # 1. 检出代码
-    - name: 检出代码
-      uses: actions/checkout@v4
+      # 1. 使用Token检出代码（关键修改）
+      - name: 检出代码 (使用 Token)
+        uses: actions/checkout@v4
+        with:
+          # 使用密钥中名为 GITHUB_TOKEN 的令牌
+          token: ${{ secrets.GITHUB_TOKEN }}
+          # 拉取全部提交历史，这对推送很重要
+          fetch-depth: 0
 
-    # 2. 设置Python环境
-    - name: 设置Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.9'
+      # 2. 设置Python环境
+      - name: 设置Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
 
-    # 3. 安装依赖
-    - name: 安装requests
-      run: pip install requests
+      # 3. 安装依赖
+      - name: 安装requests
+        run: pip install requests
 
-    # 4. 运行你的抓取脚本 (main.py)
-    - name: 运行抓取脚本
-      run: python main.py
+      # 4. 运行你的抓取脚本 (main.py)
+      - name: 运行抓取脚本
+        run: python main.py
 
-    # 👇 5. 【新增步骤】提交更新后的日志文件到仓库
-    - name: 提交并推送数据文件
-      run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-        # 将生成的数据文件添加到Git
-        git add bilibili_data_log.txt
-        # 提交更改
-        git commit -m "Auto-update B站数据抓取日志 [skip ci]" -a || echo "没有新内容可提交"
-        # 推送回仓库
-        git push
+      # 5. 配置Git用户并推送更改
+      - name: 提交并推送数据文件
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add bilibili_data_log.txt
+          # 尝试提交，如果文件无变化则跳过
+          git commit -m "📈 Auto-update B站数据抓取日志 [skip ci]" || echo "没有新内容可提交"
+          # 强制推送到当前分支
+          git push
