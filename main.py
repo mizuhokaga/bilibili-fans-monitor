@@ -2,7 +2,7 @@ import requests
 import json
 import time
 import os
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 
 
 def get_bilibili_user_info_requests(mid: str):
@@ -72,14 +72,23 @@ def get_file_summary(filename: str = "bilibili_data_log.txt"):
     return 0
 
 
+# 获取东八区时间（北京时间）
+def get_beijing_time():
+    # 获取当前UTC时间
+    utc_now = datetime.now(timezone.utc)
+    # 转换为东八区（UTC+8）
+    beijing_time = utc_now + timedelta(hours=8)
+    return beijing_time.strftime("%Y-%m-%d %H:%M:%S")
+
+
 def main():
     """主函数：抓取数据并追加到文件"""
     print("=" * 50)
     print("B站用户信息抓取工具")
     print("=" * 50)
 
-    current_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-    date_today = time.strftime("%Y-%m-%d", time.localtime())
+    current_time = get_beijing_time()  # 使用北京时间
+    # date_today = time.strftime("%Y-%m-%d", time.localtime())
 
     # 要抓取的UP主ID列表
     user_ids = ["173276266", "640584333"]
