@@ -91,7 +91,7 @@ def main():
     # date_today = time.strftime("%Y-%m-%d", time.localtime())
 
     # 要抓取的UP主ID列表
-    user_ids = ["173276266", "640584333"]
+    user_ids = ["640584333", "173276266"]
 
     print(f"抓取时间: {current_time}")
     print(f"目标用户: {', '.join(user_ids)}")
@@ -109,7 +109,7 @@ def main():
         info = get_bilibili_user_info_requests(mid)
 
         if isinstance(info, dict):
-            result_line = f"用户ID: {info['mid']} | 用户名: {info['name']} | 粉丝数: {info['fans']}"
+            result_line = f"用户名: {info['name']} | 粉丝数: {info['fans']} | 用户ID: {info['mid']}"
             print(f"  ✓ 成功: {result_line}")
             log_entry.append(result_line)
         else:
